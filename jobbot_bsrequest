@@ -1,0 +1,104 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Aug 30 14:21:55 2019
+
+@author: Tarik, Marceline, Sondra
+"""
+
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+import time
+
+
+#Demander le(s) mot(s) clés & et le(s) lieu(x)
+query = input("Veuillez enter le(s) mot(s) clés pour la recherche: \n").lower()
+location = input("Veuillez enter le(s) lieu(x) pour la recherche: \n").upper()
+
+
+#launch url
+url = 'https://candidat.pole-emploi.fr/offres/recherche?lieux={}&motsCles={}&offresPartenaires=true&range=0-9&rayon=10&tri=0'.format(location,query)
+base_url="https://candidat.pole-emploi.fr"
+
+#Critères : données + centre val de loire
+req = requests.get(url)
+soup = BeautifulSoup(req.text, "lxml")
+
+#Nombre d'offres
+titre = soup.find('h1', class_ ='title')
+nb_offres = int(titre.next_element.replace('\n', '').replace(' offres', ''))
+
+
+
+if (nb_offres>150):
+    nbpage= (nb_offres//150)
+    url2=150
+else:
+    url2=nb_offres
+    nbpage=1
+url1=0
+
+listeallUrl=[]
+for i in range(nbpage+1):
+    
+
+    url='https://candidat.pole-emploi.fr/offres/recherche?lieux={}&motsCles={}&offresPartenaires=true&range='.format(location,query) +str(url1)+'-'+str(url2)+'&rayon=10&tri=0'
+    uc=nb_offres-url2
+    
+    if (uc>150):
+        url1+=150
+        if (url1==url2):
+            url1+=1
+        url2+=150
+    else:
+        url1=url2
+        url2=nb_offres
+        
+    req = requests.get(url)
+    soup = BeautifulSoup(req.text, "lxml")
+    
+    for liens_desc in soup.find_all('h2', class_ ='t4 media-heading'):
+        allUrl=(liens_desc.find('a', class_ ='btn-reset')['href'])
+        listeallUrl.append(base_url+allUrl)
+        print(base_url+allUrl)
+    
+    
+
+hi
+
+
+
+#Creation de liste
+
+titre=[]
+localisation=[]
+publication=[]
+desc=[]
+contrat=[]
+liens=[]
+exp=[]
+
+
+for titre in soup.find_all('h2', {'class' : 't4 media-heading'}):
+    print(titre.text.replace('\n', ''))
+    #    print(titre.text)
+
+for localisation in soup.find_all('p', {'class' : 'subtext'}):
+    print(localisation.text)
+
+for publication in soup.find_all('p', {'class' : 'date'}):
+    print(publication.text)
+
+for desc in soup.find_all('p', {'class' : 'description'}):
+    print(desc.text)
+
+for contrat in soup.find_all('p', {'class' : 'contrat visible-xs'}):
+    print(contrat.text)
+
+for liens in soup.find_all('h2', class_ ='t4 media-heading'):
+    print(liens.find('a', class_ ='btn-reset')['href'])
+    
+for exp in soup.find_all("span", {'itemprop': 'experienceRequirements'}):
+    print(exp.text)
+    
