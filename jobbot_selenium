@@ -1,0 +1,182 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Aug 29 10:21:56 2019
+
+@author: tarik, marceline, sondra
+"""
+# Librairies pour web scraping
+
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from requests import get
+from requests.exceptions import RequestException
+from contextlib import closing
+
+from bs4 import BeautifulSoup
+import re
+import pandas as pd
+import os
+import csv
+import time
+
+from sqlalchemy import create_engine
+import argparse
+#~ import creds
+import os,configparser # credentials: 
+
+
+#Demander le(s) mot(s) clés & et le(s) lieu(x)
+query = input("Veuillez enter le(s) mot(s) clés pour la recherche: \n").lower()
+location = input("Veuillez enter le(s) lieu(x) pour la recherche: \n").upper()
+
+
+#launch url
+url = "https://candidat.pole-emploi.fr/offres/recherche?lieux={}&motsCles={}&offresPartenaires=true&range=0-9&rayon=10&tri=0".format(location,query)
+
+#set webdriver path
+driver = webdriver.Firefox(executable_path ='/home/tarik/anaconda3/lib/python3.6/site-packages/selenium/webdriver/geckodriver-v0.24.0-linux64/geckodriver')
+
+# fonction connection
+
+
+
+def simple_get(url):
+    """
+    Se connecte a l'url, si statut = 200 retourne le contenu ( en appelant is_good_response)
+    """
+    try:
+        with closing(get(url, stream=True)) as resp:
+            if is_good_response(resp):
+                return resp.content
+            else:
+                return None
+
+    except RequestException as e:
+        log_error('Error during requests to {0} : {1}'.format(url, str(e)))
+        return None
+def is_good_response(resp):
+    """
+    Renvoie 200 si connection a l'url
+    """
+    content_type = resp.headers['Content-Type'].lower()
+    return (resp.status_code == 200 
+            and content_type is not None 
+            and content_type.find('html') > -1)
+def log_error(e):
+    """
+    retourne l'erreur
+    """
+    print(e)
+
+
+
+
+# create a new Firefox session
+
+driver.implicitly_wait(10)
+
+#driver.implicitly_wait(10)
+driver.get(url)
+
+
+
+cookie_button = driver.find_element_by_id('footer_tc_privacy_button') #click sur accepter les coockies
+cookie_button.click() #click accepter les coockies
+time.sleep(4)
+job1_button = driver.find_element_by_id('pagelink_0')
+job1_button.click() #click sur le premier lien de job ouvre le pop-up
+
+#Récuperer la soupe
+#Selenium hands the page source to Beautiful Soup
+soup=BeautifulSoup(driver.page_source, 'lxml')
+##printing soup in a more structured tree format that makes for easier reading
+
+
+#recuperer le nombre d'offres
+nombre_offres = int(soup.find("span", {"class": "nb-total"}).get_text())
+print("il ya ",nombre_offres,"Offres pour votre recherche")
+
+# Creating an empty Dataframe with column names only
+dfObj = pd.DataFrame(columns=['Titre de l\'offre', 'Localisation', 'Experiences'])	
+
+#Definission des listes
+
+title=[]
+Localisation=[]
+Experiences=[]
+Publication=[]
+
+
+for i in range(1, nombre_offres+1):
+    
+    print("------------",i,"---------")
+       
+    soup = BeautifulSoup(simple_get(driver.current_url), 'html.parser')
+    #print(soup.prettify())
+    #print("end soup",i)
+    try:
+        Titre=soup.find(itemprop = "title").get_text()
+        print(Titre)
+        title.append(Titre)
+    except:
+        print("il ya pas de titre")
+    try:
+        Where=soup.find("span", {"itemprop": "name"}).get_text()
+        print(Where)
+        Localisation.append(Where)
+    except:
+        print("il ya pas de localisation")
+    try:
+        Exp=soup.find("span", {"itemprop": "experienceRequirements"}).get_text()
+        print(Exp)
+        Experiences.append(Exp)
+    except:
+        print("il ya pas d' expériences")
+
+    try:
+        Date_pub=soup.find("span", {"itemprop": "datePosted"}).get_text()
+        print(Date_pub)
+        Publication.append(Date_pub)
+    except:
+        print("il ya pas de date de publication")
+        
+
+    #pause
+    #time.sleep(4)
+        #click sur suivant
+    suivant_button = driver.find_element_by_xpath('//*[@title="Suivant"]')
+    suivant_button.click() #click sur le premier lien de job ouvre le pop-up
+#    driver.implicitly_wait(60)
+    
+df = pd.DataFrame({"Titre de l'offre":title,"Localisation":Localisation,"Experiences":Experiences,"Date de publication" : Publication})
+print(df)
+df.to_csv("pole_emploi.csv", encoding="utf-8")   
+    
+ 
+#Connexion et implementation BDD
+
+
+parser = argparse.ArgumentParser()
+#~ parser.add_argument("-f", action="store_true", help="traite Film")
+#~ parser.add_argument("-p", action="store_true", help="traite People")
+parser.add_argument("-v", action="store_true", help="Verbose SQL")
+parser.add_argument("--base", help="Répertoire de movies")
+parser.add_argument("--bdd", help="Base de donnée")
+args = parser.parse_args()
+
+config = configparser.ConfigParser()
+config.read_file(open(os.path.expanduser("~/Documents/Projet3_web_scraping/BDD_connexion/.datalab.cnf")))
+print(config.sections())
+
+base = args.base # "/home/goudot/Téléchargements/movies/data/"
+
+DB='BDD_Tarik:Web_scraping' #'BDD_Emmanuel?charset=utf8' # mySQL...
+mySQLengine = create_engine("mysql://%s:%s@%s/%s" % (config['myBDD']['user'], config['myBDD']['password'], config['myBDD']['host'], DB), echo=args.v)
+print(mySQLengine)
+df.to_sql(con=mySQLengine, name='OFFRES', if_exists='append')
+
+
+
+
+#driver.quit()
