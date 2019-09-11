@@ -257,7 +257,7 @@ df = pd.DataFrame({"Numéro_offre":NumOffre,"Titre_offre":title,"Localisation":L
                    "Experiences":Experiences,"Date_publication" : Publication,"Description" : Description,
                    "Contrat" : Contrat,"Horaires_Contrat" : Horaires,"Salaire" : Salaire,"Savoirsfaire" : Savoirsfaire,"Savoir_être" : Savoir_etre,
                    "Formation" : Formation,"Qualifications" : Qualifications,"Secteur" : Secteur,"Entreprise" : Entreprise,"Partenaire" : Partenaire})
-df.to_csv('pole_emploi.csv', encoding='utf-8', sep=';') 
+df.to_csv('pole_emploi.csv', mode = 'a', encoding='utf-8', sep=';', header=False) 
 print(df)    
         
 
