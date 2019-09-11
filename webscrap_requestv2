@@ -27,9 +27,9 @@ sys.argv
 
 #IMPORTANT!!!
 #Modifier le chemin au besoin les lignes 259, 269 et 326
-#Pour lancer le programme faire le commande dans le terminale, avec python3. 
+#Pour lancer le programme faire le commande dans le terminale. 
 #Ajouter le nom de programme (le fichier.py) plus le deux arguments qui definir la region et le mot clé. Etre sur que cette commande est executer dans le directory de fichier.py
-#example python3 webscrap_request_arg.py 24R sql......(24R) pour la region EN MAJUSCULE et le mot clé (ex:sql) en miniscule. Si plusieurs mot clés separer avec une virgule.
+#example:  python3 webscrap_request_arg.py 24R sql   ......(24R) pour la region EN MAJUSCULE et le mot clé (ex:sql) en miniscule. Si plusieurs mot clés separer avec une virgule.
 
 #Par convention, le 1er paramètre est la région, le 2me le mot clef
 region=sys.argv[1]
