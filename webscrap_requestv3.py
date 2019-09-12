@@ -31,9 +31,9 @@ import sys
 
 #Par convention, le 1er paramètre est la région, le 2me le mot clef
 
-try:
-    region=sys.argv[1]
-    keyword=sys.argv[2]
+#try:
+region=sys.argv[1]
+keyword=sys.argv[2]
 #except:
 #    region='24R'
 #    keyword='data'
@@ -132,7 +132,7 @@ CREATE TABLE IF NOT EXISTS `BDD_Sondra_PE`.`POLE_EMPLOI` (
   Contrat VARCHAR(250) NULL DEFAULT NULL,
   Horaires_Contrat VARCHAR(250) NULL DEFAULT NULL,
   Salaire VARCHAR(250) NULL DEFAULT NULL,
-  Savoirsfaire VARCHAR(1000) NULL DEFAULT NULL,
+  Savoirsfaire VARCHAR(1500) NULL DEFAULT NULL,
   Savoir_etre VARCHAR(1000) NULL DEFAULT NULL,
   Formation VARCHAR(250) NULL DEFAULT NULL,
   Qualifications VARCHAR(250) NULL DEFAULT NULL,
@@ -228,7 +228,7 @@ for i in range(nbpage):
             Localisation.append(Ville)  
    
         try:
-            description=soup[i].find("div", {"itemprop": "description"}).get_text()
+            description=soup[i].find("div", {"itemprop": "description"}).get_text().replace(';','')
             #print(description)
             Description.append(description)
         except:
