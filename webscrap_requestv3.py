@@ -3,7 +3,7 @@
 """
 Created on Fri Aug 30 14:21:55 2019
 
-@author: Tarik
+@author: Tarik, Sondra, Marceline
 """
 
 import requests
@@ -354,54 +354,5 @@ for i in range(nbpage):
                    'Formation':formation,'Qualifications':qualifications,'Secteur':secteuractv,'Entreprise':entreprise,'Partenaire':partenaire}
         print(param)
         mySQLengine.execute(statment,param)
-            
-
-
-
-
-
-
-
-
-        
-#pd.set_option("display.colheader_justify","right")
-#df = pd.DataFrame({"Numéro_offre":NumOffre,"title":title,"Localisation":Localisation,
-#                   "Experiences":Experiences,"Date_publication" :Publication,"Description" :Description,
-#                   "Contrat" :Contrat,"Horaires_Contrat" :Horaires,"Salaire" :Salaire,"Savoirsfaire" :Savoirsfaire,"Savoir_être" :Savoir_etre,
-#                   "Formation" :Formation,"Qualifications" :Qualifications,"Secteur" :Secteur,"Entreprise" :Entreprise,"Partenaire" :Partenaire})
-#   
-#df['Datefirst'] = pd.to_datetime('today').strftime("%Y/%m/%d")
-#df['Datelast'] = df['Datefirst']      
-
-
-#from sqlalchemy.dialects.mysql import insert
-#
-#POLE_EMPLOI=insert(df).values(
-#   Numéro_offre= Numéro_offre,
-#   Titre_offre= Titre_offre,
-#   Localisation= Localisation,
-#   Experiences= Experiences,
-#   Date_publication= Date_publication,
-#   Description= Description,
-#   Contrat= Contrat,
-#   Horaires_Contrat= Horaires_Contrat,
-#   Salaire= Salaire,
-#   Savoirsfaire= Savoirsfaire,
-#   Savoir_être= Savoir_être,
-#   Formation= Formation,
-#   Qualifications= Qualifications,
-#   Secteur= Secteur,
-#   Entreprise= Entreprise,
-#   Partenaire= Partenaire,
-#   Datefirst= datefirst,
-#   Datelast= datelast)
-#do_update_stmt = POLE_EMPLOI.on_duplicate_key_update(
-#    
-#    Datelast=POLE_EMPLOI.inserted.datelast
-#)
-#mySQLengine.execute(do_update_POLE_EMPLOI)
-
-
-
-
-    
+           
+   
