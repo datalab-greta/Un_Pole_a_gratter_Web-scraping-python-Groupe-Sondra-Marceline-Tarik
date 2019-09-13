@@ -1,0 +1,11 @@
+[myBDD]
+user = team
+password = DataLab@2019
+host = localhost
+BDD = 'Job_Bot_SMT?charset=utf8'
+[pgBDD]
+user=team
+password=DataLab@2019
+host=localhost
+BDD = 'Job_Bot_SMT?charset=utf8'
+
